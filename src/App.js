@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
 
-const instance = axios.create({
+export const instance = axios.create({
   baseURL: "https://reqres.in/api/",
   headers: { "X-Custom-Header": "foobar" },
 });
@@ -20,15 +20,35 @@ function App() {
   const [data, setData] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [singleUser, setSingleUser] = useState(null);
+  const [name, setName] = useState("");
+  const [job, setJob] = useState("");
+  const [id, setId] = useState("");
 
   useEffect(() => {
+    fetchUser();
+    fetchSingleUser();
+  }, []);
+
+  const fetchUser = () => {
     makeRequest({
       method: "get",
       path: "/users?page=2",
       onSuccess: (res) => setData(res.data.data),
       onFail: (error) => console.error(error),
     });
-  }, []);
+  };
+
+  const fetchSingleUser = async () => {
+    try {
+      const res = await instance.get("/users/2");
+      if (res.status === 200) {
+        setSingleUser(res.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const postUserData = () => {
     makeRequest({
@@ -68,6 +88,21 @@ function App() {
     setEmail(e.target.value);
   };
 
+  const postName = async (e) => {
+    e.preventDefault();
+    try {
+      const req = await instance.post("/users", {
+        name,
+        job,
+      });
+      if (req.status === 201) {
+        setId(req.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <ul>{data && data.map((item) => <li key={item.id}>{item.email}</li>)}</ul>
@@ -75,9 +110,34 @@ function App() {
       <button onClick={deleteUserData}>delete데이터</button>
       <form onSubmit={loginSubmit}>
         <input type="email" placeholder="email" onChange={emailChange} />
-        <input type="password" placeholder="password" onChange={(e) => setPassword(e.target.value)} />
+        <input
+          type="password"
+          placeholder="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <button type="submit">로그인</button>
       </form>
+      <div>{singleUser && singleUser.first_name}</div>
+
+      <form onSubmit={postName}>
+        <input
+          type="text"
+          placeholder="name"
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="job"
+          onChange={(e) => setJob(e.target.value)}
+        />
+        <button type="submit">이름, 직업 버튼</button>
+      </form>
+      {id && (
+        <>
+          <div>{id.id}</div>
+          <div>{id.createdAt}</div>
+        </>
+      )}
     </>
   );
 }
