@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect} from "react";
 import { instance } from "./App";
+import useStore from "./store.js/store";
 
 const List = () => {
-  const [list, setList] = useState(null);
+  const {list, setList} = useStore();
 
   useEffect(() => {
     fetchList();

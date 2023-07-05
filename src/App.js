@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "./App.css";
 import axios from "axios";
+import useStore from "./store.js/store";
 
 export const instance = axios.create({
   baseURL: "https://reqres.in/api/",
@@ -17,13 +18,22 @@ async function makeRequest({ method, path, data, onSuccess, onFail }) {
 }
 
 function App() {
-  const [data, setData] = useState(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [singleUser, setSingleUser] = useState(null);
-  const [name, setName] = useState("");
-  const [job, setJob] = useState("");
-  const [id, setId] = useState("");
+  const {
+    data,
+    setData,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    singleUser,
+    setSingleUser,
+    name,
+    setName,
+    job,
+    setJob,
+    id,
+    setId,
+  } = useStore();
 
   useEffect(() => {
     fetchUser();
@@ -56,7 +66,7 @@ function App() {
       path: "/users",
       data: { name: "morpheus", job: "leader" },
       onSuccess: (res) => {
-        if (res.status === 201) console.log("성공");
+        if (res.status === 201) console.log("POST 성공");
       },
       onFail: (error) => console.error(error),
     });
@@ -67,7 +77,7 @@ function App() {
       method: "delete",
       path: "/users/2",
       onSuccess: (res) => {
-        if (res.status === 204) console.log("성공임둥");
+        if (res.status === 204) console.log("삭제 성공");
       },
       onFail: (error) => console.log(error),
     });
