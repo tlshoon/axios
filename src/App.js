@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import "./App.css";
 import axios from "axios";
 import useStore from "./store.js/store";
 
@@ -49,6 +48,8 @@ function App() {
     });
   };
 
+
+  
   const fetchSingleUser = async () => {
     try {
       const res = await instance.get("/users/2");
